@@ -10,7 +10,8 @@ import javax.swing.JPanel;
 import entidad.Jugador;
 import tile.ManejadorTiles;
 
-public class GamePanel extends JPanel implements Runnable{
+public class GamePanel extends JPanel implements Runnable
+{
 	//configutacion pantalla
 	private final int tamanioOriginalTile = 16;
 	private final int escala = 3;
@@ -34,28 +35,33 @@ public class GamePanel extends JPanel implements Runnable{
 	private final int anchoMundo = this.tamanioTile * this.maxColMundo;
 	private final int altoMundo = this.tamanioTile * this.maxRenMundo;
 	
-	public GamePanel() {
+	public GamePanel() 
+	{
 		this.setPreferredSize(new Dimension(this.anchoPantalla, this.altoPantalla));
 		this.setBackground(Color.BLACK);
 		this.setDoubleBuffered(true);
 		this.addKeyListener(mT);
 		this.setFocusable(true);
 	}
-	public void iniciaHebraJuego() {
+	public void iniciaHebraJuego() 
+	{
 		hebraJuego = new Thread(this);
 		hebraJuego.start();
 	}
 	@Override
-	public void run() {
+	public void run() 
+	{
 		double intervaloDibujo = 1000000000 / FPS;
 		double delta = 0;
 		long ultimaVez = System.nanoTime();
 		long tiempoActual;
-		while(hebraJuego != null) {
+		while(hebraJuego != null) 
+		{
 			tiempoActual =  System.nanoTime();
 			delta += (tiempoActual - ultimaVez) / intervaloDibujo;
 			ultimaVez = tiempoActual;
-			if(delta >= 1) {
+			if(delta >= 1) 
+			{
 				update();
 				repaint();
 				delta--;

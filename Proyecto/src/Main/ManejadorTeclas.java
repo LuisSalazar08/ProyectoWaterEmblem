@@ -3,15 +3,19 @@ package Main;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-public class ManejadorTeclas implements KeyListener{
+public class ManejadorTeclas implements KeyListener
+{
 	private boolean teclaArriba, teclaAbajo, teclaIzquierda, teclaDerecha;
 	@Override
-	public void keyTyped(KeyEvent e) {
+	public void keyTyped(KeyEvent e) 
+	{
 		
 	}
 	@Override
-	public void keyPressed(KeyEvent e) {
-		switch(e.getKeyCode()) {
+	public void keyPressed(KeyEvent e) 
+	{
+		switch(e.getKeyCode()) 
+		{
 		case KeyEvent.VK_W : teclaArriba = true;
 		break;
 		case KeyEvent.VK_S : teclaAbajo = true;
@@ -23,8 +27,10 @@ public class ManejadorTeclas implements KeyListener{
 		}
 	}
 	@Override
-	public void keyReleased(KeyEvent e) {
-		switch(e.getKeyCode()) {
+	public void keyReleased(KeyEvent e) 
+	{
+		switch(e.getKeyCode()) 
+		{
 		case KeyEvent.VK_W : teclaArriba = false;
 		break;
 		case KeyEvent.VK_S : teclaAbajo = false;

@@ -2,8 +2,10 @@ package Main;
 
 import javax.swing.JFrame;
 
-public class Proyecto {
-	public static void main(String[] args) {
+public class Proyecto 
+{
+	public static void main(String[] args) 
+	{
 		JFrame ventana = new JFrame();
 		ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ventana.setResizable(false);
