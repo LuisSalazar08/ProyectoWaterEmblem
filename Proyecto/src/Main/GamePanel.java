@@ -7,7 +7,7 @@ import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
-import entidad.Jugador;
+import entidad.Cursor;
 import tile.ManejadorTiles;
 
 public class GamePanel extends JPanel implements Runnable
@@ -23,7 +23,7 @@ public class GamePanel extends JPanel implements Runnable
 	
 	Thread hebraJuego;
 	ManejadorTeclas mT = new ManejadorTeclas();
-	Jugador jugador = new Jugador(this, mT);
+	Cursor cursor = new Cursor(this, mT);
 	ManejadorTiles mTi = new ManejadorTiles(this);
 	int playerX = 100, playerY = 100, velocidadJugador = 4;
 	
@@ -68,17 +68,17 @@ public class GamePanel extends JPanel implements Runnable
 			}
 		}
 	}
-	public void update() {
-		jugador.update();
+	public void update() 
+	{
+		cursor.update();
 	}
 	@Override
-	public void paintComponent(Graphics g) {
+	public void paintComponent(Graphics g) 
+	{
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D)g;
 		mTi.draw(g2);
-		jugador.draw(g2);
-		//g2.setColor(Color.GREEN);
-		//g2.fillRect(playerX, playerY, tamanioTile, tamanioTile);
+		cursor.draw(g2);
 		g2.dispose();
 	}
 	
@@ -115,8 +115,8 @@ public class GamePanel extends JPanel implements Runnable
 	public int getAltoMundo() {
 		return this.altoMundo;
 	}
-	public Jugador getJugador() {
-		return this.jugador;
+	public Cursor getJugador() {
+		return this.cursor;
 	}
 	
 	

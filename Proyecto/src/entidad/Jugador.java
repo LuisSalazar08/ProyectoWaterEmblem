@@ -22,7 +22,8 @@ public class Jugador extends Entidad {
 		configuracionInicial();
 		getSpritesJugador();
 		}
-	public void configuracionInicial() {
+	public void configuracionInicial() 
+	{
 		this.mundoX = (gP.getMaxColMundo() / 2) * gP.getTamanioTile();
 	    this.mundoY = (gP.getMaxRenMundo() / 2) * gP.getTamanioTile();
 		this.velocidad = 4;
@@ -57,7 +58,7 @@ public class Jugador extends Entidad {
 			this.direccion = "abajo";
 		}
 		else if(mT.getTeclaIzquierda()) {
-			setX(getX() - getVelocidad());
+//			setX(getX() - getVelocidad());
 			this.direccion = "izquierda";
 		}
 		else if(mT.getTeclaDerecha()) {
