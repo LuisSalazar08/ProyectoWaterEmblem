@@ -13,15 +13,19 @@ public class Cursor extends Entidad {
 	private GamePanel gP;
 	private ManejadorTeclas mT;
 	private final int pantallaX, pantallaY;
+	private final int tileSize;
+	private boolean seMovio;
 	
 	public Cursor(GamePanel gP, ManejadorTeclas mT)
 	{
 		this.gP = gP;
 		this.mT = mT;
+		this.tileSize = gP.getTamanioTile();
 		this.pantallaX = gP.getAnchoPantalla() / 2 - (gP.getTamanioTile() / 2);
 		this.pantallaY = gP.getAltoPantalla() / 2  - (gP.getTamanioTile() / 2);
 		configuracionInicial();
 		getSpritesJugador();
+		seMovio = false;
 	}
 	public void configuracionInicial() 
 	{
@@ -40,34 +44,26 @@ public class Cursor extends Entidad {
 		}
 	}
 	
-	public void update() {
-		if(mT.getTeclaArriba() == true || mT.getTeclaAbajo() == true || mT.getTeclaIzquierda() == true ||
-				mT.getTeclaDerecha() == true)
-			this.contadorSprites++;
-		if(mT.getTeclaArriba()) {
-			setY(getY() - getVelocidad());
-			this.direccion = "arriba";
-		}
-		else if(mT.getTeclaAbajo()) {
-			setY(getY() + getVelocidad());
-			this.direccion = "abajo";
-		}
-		else if(mT.getTeclaIzquierda()) {
-			setX(getX() - getVelocidad());
-			this.direccion = "izquierda";
-		}
-		else if(mT.getTeclaDerecha()) {
-			setX(getX() + getVelocidad());
-			this.direccion = "derecha";
-		}
-		if(this.contadorSprites > this.cambiaSprite) {
-			if(this.numeroSprites == 1)
-				this.numeroSprites = 2;
-			else
-				this.numeroSprites = 1;
-			this.contadorSprites = 0;
-		}
-	}
+    public void update() {
+        if (!seMovio) {
+            if (mT.getTeclaArriba()) {
+                this.mundoY -= tileSize;
+                seMovio = true;
+            } else if (mT.getTeclaAbajo()) {
+                this.mundoY += tileSize;
+                seMovio = true;
+            } else if (mT.getTeclaIzquierda()) {
+                this.mundoX -= tileSize;
+                seMovio = true;
+            } else if (mT.getTeclaDerecha()) {
+                this.mundoX += tileSize;
+                seMovio = true;
+            }
+        }
+        if (!mT.getTeclaArriba() && !mT.getTeclaAbajo() && !mT.getTeclaIzquierda() && !mT.getTeclaDerecha()) {
+            seMovio = false;
+        }
+    }
 	public void draw(Graphics2D g2) {
 		BufferedImage sprite = this.arriba1;
 		g2.drawImage(sprite, this.pantallaX, this.pantallaY, gP.getTamanioTile(), gP.getTamanioTile(), null);
