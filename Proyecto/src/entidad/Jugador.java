@@ -58,7 +58,7 @@ public class Jugador extends Entidad {
 			this.direccion = "abajo";
 		}
 		else if(mT.getTeclaIzquierda()) {
-//			setX(getX() - getVelocidad());
+			setX(getX() - getVelocidad());
 			this.direccion = "izquierda";
 		}
 		else if(mT.getTeclaDerecha()) {

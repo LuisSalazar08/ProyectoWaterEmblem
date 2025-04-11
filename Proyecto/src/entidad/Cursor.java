@@ -14,7 +14,11 @@ public class Cursor extends Entidad {
 	private ManejadorTeclas mT;
 	private final int pantallaX, pantallaY;
 	private final int tileSize;
-	private boolean seMovio;
+	
+	 private long lastMoveTime = 0;
+	 private final long initialDelay = 100;  
+	 private final long repeatDelay = 100;   
+	 private boolean keyWasPressed = false;
 	
 	public Cursor(GamePanel gP, ManejadorTeclas mT)
 	{
@@ -25,7 +29,6 @@ public class Cursor extends Entidad {
 		this.pantallaY = gP.getAltoPantalla() / 2  - (gP.getTamanioTile() / 2);
 		configuracionInicial();
 		getSpritesJugador();
-		seMovio = false;
 	}
 	public void configuracionInicial() 
 	{
@@ -44,24 +47,48 @@ public class Cursor extends Entidad {
 		}
 	}
 	
-    public void update() {
-        if (!seMovio) {
-            if (mT.getTeclaArriba()) {
-                this.mundoY -= tileSize;
-                seMovio = true;
-            } else if (mT.getTeclaAbajo()) {
-                this.mundoY += tileSize;
-                seMovio = true;
-            } else if (mT.getTeclaIzquierda()) {
-                this.mundoX -= tileSize;
-                seMovio = true;
-            } else if (mT.getTeclaDerecha()) {
-                this.mundoX += tileSize;
-                seMovio = true;
-            }
-        }
-        if (!mT.getTeclaArriba() && !mT.getTeclaAbajo() && !mT.getTeclaIzquierda() && !mT.getTeclaDerecha()) {
-            seMovio = false;
+    public void update() 
+    {
+    	boolean keyPressed = mT.getTeclaArriba() || mT.getTeclaAbajo() ||
+                mT.getTeclaIzquierda() || mT.getTeclaDerecha();
+                
+    	long currentTime = System.currentTimeMillis();
+
+		if (keyPressed) 
+		{
+			if (!this.keyWasPressed) 
+			{
+			   move();
+			   this.lastMoveTime = currentTime;
+			   this.keyWasPressed = true;
+			} 
+			else 
+			{
+				long diff = currentTime - this.lastMoveTime;
+				long delay = (diff < this.initialDelay) ? this.initialDelay : this.repeatDelay;
+				if (diff >= delay) 
+				{
+			       move();
+			       this.lastMoveTime = currentTime;
+				}
+			}
+		} 
+		else 
+			this.keyWasPressed = false;
+    }
+    private void move() 
+    {
+        if (mT.getTeclaArriba()) {
+            this.mundoY -= tileSize;
+        } 
+        if (mT.getTeclaAbajo()) {
+            this.mundoY += tileSize;
+        } 
+        if (mT.getTeclaIzquierda()) {
+            this.mundoX -= tileSize;
+        } 
+        if (mT.getTeclaDerecha()) {
+            this.mundoX += tileSize;
         }
     }
 	public void draw(Graphics2D g2) {

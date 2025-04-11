@@ -6,6 +6,7 @@ import java.awt.event.KeyListener;
 public class ManejadorTeclas implements KeyListener
 {
 	private boolean teclaArriba, teclaAbajo, teclaIzquierda, teclaDerecha;
+
 	@Override
 	public void keyTyped(KeyEvent e) 
 	{
