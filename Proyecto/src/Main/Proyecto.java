@@ -9,7 +9,7 @@ public class Proyecto
 		JFrame ventana = new JFrame();
 		ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ventana.setResizable(false);
-		ventana.setTitle("TOO - Proyecto");
+		ventana.setTitle("Water Emblem");
 		
 		GamePanel panelJuego = new GamePanel();
 		ventana.add(panelJuego);
