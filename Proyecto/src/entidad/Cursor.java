@@ -40,6 +40,7 @@ public class Cursor extends Entidad
 		
 		boolean keyPressed = this.mT.getMovimiento();
 		mMV.updateMV(keyPressed);
+		actualizarSeleccion(gP);
 		boolean enterActual=this.mT.getTeclaEnter();
 		this.enterPresionadoAnterior=enterActual;
 		if(this.unidadSeleccionada==null)
@@ -61,11 +62,30 @@ public class Cursor extends Entidad
 		}
     	
     }
+	
+	public void actualizarSeleccion(GamePanel gP) {
+	    int tileCursorX = mundoX / gP.getTamanioTile();
+	    int tileCursorY = mundoY / gP.getTamanioTile();
+	    
+	    unidadSeleccionada = null;
+	    for (Entidad u : gP.getME().getEntidades()) {
+	        int tilePX = u.getMundoX() / gP.getTamanioTile();
+	        int tilePY = u.getMundoY() / gP.getTamanioTile();
+	        if (tilePX == tileCursorX && tilePY == tileCursorY) {
+	        	unidadSeleccionada = (Unidad) u;
+	            break;
+	        }
+	    }
+	}
 	@Override
 	public void draw(Graphics2D g2) 
 	{
 		int pantallaX = mundoX - gP.getJugador().getMundoX() + this.pantallaX;
         int pantallaY = mundoY - gP.getJugador().getMundoY() + this.pantallaY;
 		g2.drawImage(sprite, pantallaX, pantallaY, gP.getTamanioTile(), gP.getTamanioTile(), null);
+	}
+	
+	public Unidad getUnidadSeleccionada() {
+		return this.unidadSeleccionada;
 	}
 }

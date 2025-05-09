@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import entidad.Unidad;
 import entidad.Cursor;
 import tile.ManejadorTiles;
+import ui.InfoBox;
 
 public class GamePanel extends JPanel implements Runnable
 {
@@ -27,6 +28,7 @@ public class GamePanel extends JPanel implements Runnable
 	Cursor cursor = new Cursor(this, mT);
 	ManejadorTiles mTi = new ManejadorTiles(this);
 	ManejadorEntidades mE = new ManejadorEntidades(this);
+	InfoBox infoBox = new InfoBox(10, 10, 150, 100);
 	
 	int	FPS = 60;
 	
@@ -73,6 +75,7 @@ public class GamePanel extends JPanel implements Runnable
 	{
 		this.cursor.update();
 		this.mE.updateAll();
+		cursor.actualizarSeleccion(this);
 	}
 	@Override
 	public void paintComponent(Graphics g) 
@@ -82,6 +85,7 @@ public class GamePanel extends JPanel implements Runnable
 		mTi.draw(g2);
 		this.cursor.draw(g2);
 		this.mE.drawALL(g2);
+		infoBox.draw(g2, cursor.getUnidadSeleccionada());
 		g2.dispose();
 	}
 	

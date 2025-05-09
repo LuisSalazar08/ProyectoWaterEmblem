@@ -49,4 +49,18 @@ public class Unidad extends Entidad
 	public boolean estaSeleccionada() {
         return this.seleccionada;
     }
+	
+	public String getNombre() {
+		return "Fidel";
+	}
+	public int getHp() {
+		return 10;
+	}
+	public int getMaxHp() {
+		return 50;
+	}
+	public int getFuerza() {
+		return 100;
+	}
+	
 }
