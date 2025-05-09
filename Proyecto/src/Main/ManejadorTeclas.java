@@ -5,7 +5,7 @@ import java.awt.event.KeyListener;
 
 public class ManejadorTeclas implements KeyListener
 {
-	private boolean teclaArriba, teclaAbajo, teclaIzquierda, teclaDerecha;
+	private boolean teclaArriba, teclaAbajo, teclaIzquierda, teclaDerecha,teclaEnter;
 
 	@Override
 	public void keyTyped(KeyEvent e) 
@@ -25,6 +25,8 @@ public class ManejadorTeclas implements KeyListener
 		break;
 		case KeyEvent.VK_D : teclaDerecha= true;
 		break;
+		case KeyEvent.VK_ENTER : teclaEnter= true;
+		break;
 		}
 	}
 	@Override
@@ -40,8 +42,21 @@ public class ManejadorTeclas implements KeyListener
 		break;
 		case KeyEvent.VK_D : teclaDerecha = false;
 		break;
+		case KeyEvent.VK_ENTER : teclaEnter= false;
+		break;
 		}
 	}
+	
+	public boolean getMovimiento() 
+	{
+		return this.getTeclaArriba() || this.teclaAbajo 
+				|| this.getTeclaDerecha() || this.teclaIzquierda;
+	}
+	
+	public boolean getTeclaEnter() {
+		return this.teclaEnter;
+	}
+	
 	
 	public boolean getTeclaArriba() {
 		return this.teclaArriba;

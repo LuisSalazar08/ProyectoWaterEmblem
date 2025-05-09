@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
+import entidad.Unidad;
 import entidad.Cursor;
 import tile.ManejadorTiles;
 
@@ -25,7 +26,7 @@ public class GamePanel extends JPanel implements Runnable
 	ManejadorTeclas mT = new ManejadorTeclas();
 	Cursor cursor = new Cursor(this, mT);
 	ManejadorTiles mTi = new ManejadorTiles(this);
-	int playerX = 100, playerY = 100, velocidadJugador = 4;
+	ManejadorEntidades mE = new ManejadorEntidades(this);
 	
 	int	FPS = 60;
 	
@@ -41,7 +42,7 @@ public class GamePanel extends JPanel implements Runnable
 		this.setBackground(Color.BLACK);
 		this.setDoubleBuffered(true);
 		this.addKeyListener(mT);
-		this.setFocusable(true);
+		this.setFocusable(true);	
 	}
 	public void iniciaHebraJuego() 
 	{
@@ -70,7 +71,8 @@ public class GamePanel extends JPanel implements Runnable
 	}
 	public void update() 
 	{
-		cursor.update();
+		this.cursor.update();
+		this.mE.updateAll();
 	}
 	@Override
 	public void paintComponent(Graphics g) 
@@ -78,8 +80,20 @@ public class GamePanel extends JPanel implements Runnable
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D)g;
 		mTi.draw(g2);
-		cursor.draw(g2);
+		this.cursor.draw(g2);
+		this.mE.drawALL(g2);
 		g2.dispose();
+	}
+	
+	
+	public ManejadorTeclas getMT()
+	{
+		return this.mT;
+	}
+	
+	public ManejadorEntidades getME()
+	{
+		return this.mE;
 	}
 	
 	public int getTamanioOriginalTile() {
