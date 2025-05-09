@@ -11,6 +11,7 @@ import entidad.Unidad;
 import entidad.Cursor;
 import tile.ManejadorTiles;
 import ui.InfoBox;
+import ui.OptionMenu;
 
 public class GamePanel extends JPanel implements Runnable
 {
@@ -29,6 +30,7 @@ public class GamePanel extends JPanel implements Runnable
 	ManejadorTiles mTi = new ManejadorTiles(this);
 	ManejadorEntidades mE = new ManejadorEntidades(this);
 	InfoBox infoBox = new InfoBox(10, 10, 150, 100);
+	OptionMenu menu = new OptionMenu(100, 0, "Mover", "Atacar", "Esperar");
 	
 	int	FPS = 60;
 	
@@ -71,12 +73,27 @@ public class GamePanel extends JPanel implements Runnable
 			}
 		}
 	}
-	public void update() 
-	{
-		this.cursor.update();
-		this.mE.updateAll();
-		cursor.actualizarSeleccion(this);
-	}
+    public void update() {
+        Unidad u = cursor.getUnidadSeleccionada();
+        if (menu.isVisible()) {
+            menu.update(
+                mT.getFlechaArriba(),
+                mT.getFlechaAbajo(),
+                mT.getTeclaEnter(),
+                mT.getTeclaEsc()
+            );
+        } else {
+            if (mT.getTeclaArriba() || mT.getTeclaAbajo() || mT.getTeclaIzquierda() || mT.getTeclaDerecha()) {
+                cursor.update();
+                cursor.actualizarSeleccion(this);
+            }
+            if (u != null && mT.getTeclaEnter()) {
+                int cx = (anchoPantalla - menu.getWidth()) / 2;
+                int cy = (altoPantalla - menu.getHeight()) / 2;
+                menu.show(cx, cy);
+            }
+        }
+    }
 	@Override
 	public void paintComponent(Graphics g) 
 	{
@@ -86,6 +103,7 @@ public class GamePanel extends JPanel implements Runnable
 		this.cursor.draw(g2);
 		this.mE.drawALL(g2);
 		infoBox.draw(g2, cursor.getUnidadSeleccionada());
+		menu.draw(g2);
 		g2.dispose();
 	}
 	

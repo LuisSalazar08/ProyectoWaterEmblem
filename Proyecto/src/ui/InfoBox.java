@@ -34,8 +34,6 @@ public class InfoBox {
         g2.drawString("HP: " + u.getHp() + "/" + u.getMaxHp(), textX, textY);
 
         textY += lineHeight;
-        g2.drawString("Fuerza: " + u.getFuerza(), textX, textY);
-
-       
+        g2.drawString("Fuerza: " + u.getFuerza(), textX, textY);   
     }
 }

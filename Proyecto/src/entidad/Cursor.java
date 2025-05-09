@@ -41,25 +41,8 @@ public class Cursor extends Entidad
 		boolean keyPressed = this.mT.getMovimiento();
 		mMV.updateMV(keyPressed);
 		actualizarSeleccion(gP);
-		boolean enterActual=this.mT.getTeclaEnter();
-		this.enterPresionadoAnterior=enterActual;
-		if(this.unidadSeleccionada==null)
-		{
-			if(this.enterPresionadoAnterior)
-				for(Entidad e : gP.getME().getEntidades())
-					if(e instanceof Unidad u)
-						if((u.getMundoX() == this.mundoX) 
-								&& (u.getMundoY()==this.mundoY))
-						{
-							this.unidadSeleccionada=u;
-							u.setSeleccionada(true);
-							break;
-						}
-		}
-		if(this.unidadSeleccionada!=null)
-		{
-			this.unidadSeleccionada.update();
-		}
+		
+		
     	
     }
 	
