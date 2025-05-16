@@ -66,6 +66,12 @@ public class ManejadorTiles {
 			e.printStackTrace();
 		}
 	}
+	
+    public boolean isPassable(int fila, int col) {
+        int codigo = codigosMapaTiles[fila][col];
+        return !(codigo == 0 || codigo == 1 || codigo == 3);
+    }
+	
 	public void draw(Graphics2D g2) {
 	    int renMundo = 0, colMundo = 0;
 	    

@@ -2,6 +2,8 @@ package ui;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+
 import entidad.Unidad;
 
 public class InfoBox {
@@ -28,12 +30,29 @@ public class InfoBox {
         int lineHeight = 20;
         int textX = x + 10;
         int textY = y + lineHeight;
-        g2.drawString("Nombre: " + u.getNombre(), textX, textY);
+        g2.drawString(u.getNombre()+ " " + "(" + u.getTipoUnidad() + ")", textX, textY);
 
         textY += lineHeight;
-        g2.drawString("HP: " + u.getHp() + "/" + u.getMaxHp(), textX, textY);
+        g2.drawString("HP: " + u.getStats().getHP() + "/" + u.getStats().getMAXHP(), textX, textY);
 
         textY += lineHeight;
-        g2.drawString("Fuerza: " + u.getFuerza(), textX, textY);   
+        g2.drawString("Fuerza: " + u.getStats().getSTR(), textX, textY); 
+        
+     //sprite ampliado
+        int spriteSize = 96; 
+        int spriteX = x + width + 10; 
+        int spriteY = y; 
+
+        g2.setColor(new Color(0, 0, 0, 150));
+        g2.fillRect(spriteX, spriteY, spriteSize, spriteSize);
+
+        g2.setColor(Color.WHITE);
+        g2.drawRect(spriteX, spriteY, spriteSize, spriteSize);
+
+        BufferedImage sprite = u.getIdleFrameActual(); 
+        if (sprite != null) {
+            g2.drawImage(sprite, spriteX, spriteY, spriteSize, spriteSize, null);
+        
+        }
     }
 }

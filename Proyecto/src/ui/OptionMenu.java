@@ -4,6 +4,10 @@ import java.awt.Graphics2D;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.List;
+
+import Main.GamePanel;
+import entidad.Unidad;
+
 import java.util.Arrays;
 
 public class OptionMenu {
@@ -14,8 +18,10 @@ public class OptionMenu {
     private boolean visible = false;
     private Font font = new Font("Arial", Font.PLAIN, 16);
     private int lineHeight = 20;
+    private final GamePanel panel;
 
-    public OptionMenu(int width, int height, String... opts) {
+    public OptionMenu(GamePanel panel, int width, int height, String... opts) {
+    	this.panel  = panel;
         this.width = width;
         this.height = lineHeight * opts.length + 10;
         this.options = Arrays.asList(opts);
@@ -53,8 +59,23 @@ public class OptionMenu {
     }
 
     private void executeOption(String opt) {
-        // segun la opcion se realiza una accion
-        System.out.println("Opción elegida: " + opt);
+        switch(opt) {
+        case "Mover":
+            Unidad u = panel.getJugador().getUnidadSeleccionada();
+            if (u != null) {
+                u.setSeleccionada(true);
+                u.initMovimientoBounds();
+            }
+            break;
+        case "Atacar":
+            Unidad u1 = panel.getJugador().getUnidadSeleccionada();
+        	if (u1 != null) {
+        		u1.setSeleccionada(true);
+        	}
+            break;
+        case "Salir":
+            break;
+    }
     }
 
     public void draw(Graphics2D g2) {

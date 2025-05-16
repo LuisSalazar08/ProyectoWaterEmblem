@@ -9,9 +9,11 @@ import javax.swing.JPanel;
 
 import entidad.Unidad;
 import entidad.Cursor;
+import entidad.Entidad;
 import tile.ManejadorTiles;
 import ui.InfoBox;
 import ui.OptionMenu;
+import entidad.Unidad;
 
 public class GamePanel extends JPanel implements Runnable
 {
@@ -24,13 +26,14 @@ public class GamePanel extends JPanel implements Runnable
 	private final int anchoPantalla = tamanioTile * maxColPantalla;
 	private final int altoPantalla = tamanioTile * maxRenPantalla;
 	
+	
 	Thread hebraJuego;
 	ManejadorTeclas mT = new ManejadorTeclas();
 	Cursor cursor = new Cursor(this, mT);
 	ManejadorTiles mTi = new ManejadorTiles(this);
 	ManejadorEntidades mE = new ManejadorEntidades(this);
 	InfoBox infoBox = new InfoBox(10, 10, 150, 100);
-	OptionMenu menu = new OptionMenu(100, 0, "Mover", "Atacar", "Esperar");
+	OptionMenu menu = new OptionMenu(this, 100, 0, "Mover", "Atacar", "Salir");
 	
 	int	FPS = 60;
 	
@@ -73,38 +76,53 @@ public class GamePanel extends JPanel implements Runnable
 			}
 		}
 	}
-    public void update() {
-        Unidad u = cursor.getUnidadSeleccionada();
-        if (menu.isVisible()) {
-            menu.update(
-                mT.getFlechaArriba(),
-                mT.getFlechaAbajo(),
-                mT.getTeclaEnter(),
-                mT.getTeclaEsc()
-            );
-        } else {
-            if (mT.getTeclaArriba() || mT.getTeclaAbajo() || mT.getTeclaIzquierda() || mT.getTeclaDerecha()) {
-                cursor.update();
-                cursor.actualizarSeleccion(this);
-            }
-            if (u != null && mT.getTeclaEnter()) {
-                int cx = (anchoPantalla - menu.getWidth()) / 2;
-                int cy = (altoPantalla - menu.getHeight()) / 2;
-                menu.show(cx, cy);
-            }
-        }
-    }
+	public void update() {
+	    Unidad u = cursor.getUnidadSeleccionada();
+	    mE.updateAll();
+
+	    if (u != null && u.estaSeleccionada()) {
+	        u.update();      
+	        return;          
+	    }
+
+	    if (menu.isVisible()) {
+	        menu.update(mT.getFlechaArriba(), mT.getFlechaAbajo(),
+	                    mT.getTeclaEnter(),   mT.getTeclaEsc());
+	    } else {
+	        if (mT.getTeclaArriba() || mT.getTeclaAbajo() ||
+	            mT.getTeclaIzquierda() || mT.getTeclaDerecha()) {
+	            cursor.update();
+	            cursor.actualizarSeleccion(this);
+	        }
+	        if (u != null && mT.getTeclaEnter()) {
+	            int cx = (anchoPantalla - menu.getWidth()) / 2;
+	            int cy = (altoPantalla  - menu.getHeight()) / 2;
+	            menu.show(cx, cy);
+	        }
+	    }
+	}
 	@Override
-	public void paintComponent(Graphics g) 
-	{
-		super.paintComponent(g);
-		Graphics2D g2 = (Graphics2D)g;
-		mTi.draw(g2);
-		this.cursor.draw(g2);
-		this.mE.drawALL(g2);
-		infoBox.draw(g2, cursor.getUnidadSeleccionada());
-		menu.draw(g2);
-		g2.dispose();
+	public void paintComponent(Graphics g) {
+	    super.paintComponent(g);
+	    Graphics2D g2 = (Graphics2D) g;
+
+	    mTi.draw(g2);
+	    mE.drawALL(g2); 
+
+	    for (Entidad e : getME().getEntidades()) {
+	        if (e instanceof Unidad) {
+	            Unidad u = (Unidad) e;
+	            if (u.estaSeleccionada()) {
+	                u.drawHighlight(g2);
+	            }
+	        }
+	    }
+
+	    cursor.draw(g2);
+	    infoBox.draw(g2, cursor.getUnidadSeleccionada());
+	    menu.draw(g2);
+
+	    g2.dispose();
 	}
 	
 	
@@ -153,6 +171,9 @@ public class GamePanel extends JPanel implements Runnable
 	}
 	public Cursor getJugador() {
 		return this.cursor;
+	}
+	public ManejadorTiles getManejadorTiles() {
+		return this.mTi;
 	}
 	
 	

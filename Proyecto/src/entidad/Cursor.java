@@ -1,5 +1,6 @@
 package entidad;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -63,9 +64,24 @@ public class Cursor extends Entidad
 	@Override
 	public void draw(Graphics2D g2) 
 	{
-		int pantallaX = mundoX - gP.getJugador().getMundoX() + this.pantallaX;
-        int pantallaY = mundoY - gP.getJugador().getMundoY() + this.pantallaY;
-		g2.drawImage(sprite, pantallaX, pantallaY, gP.getTamanioTile(), gP.getTamanioTile(), null);
+	    int tileSize = gP.getTamanioTile();
+
+	    int tileCol = this.mundoX / tileSize;
+	    int tileRow = this.mundoY / tileSize;
+
+	    int tileScreenX = tileCol * tileSize 
+	        - gP.getJugador().getMundoX() + this.pantallaX;
+	    int tileScreenY = tileRow * tileSize 
+	        - gP.getJugador().getMundoY() + this.pantallaY;
+
+	    if (unidadSeleccionada != null) {
+	        g2.setColor(new Color(0, 255, 0, 100));
+	        g2.fillRect(tileScreenX, tileScreenY, tileSize, tileSize);
+	    }
+	    int auxY = 32; 
+	    int cursorScreenX = this.mundoX - gP.getJugador().getMundoX() + this.pantallaX;
+	    int cursorScreenY = this.mundoY - gP.getJugador().getMundoY() + this.pantallaY - auxY;
+	    g2.drawImage(sprite, cursorScreenX, cursorScreenY, tileSize, tileSize, null);
 	}
 	
 	public Unidad getUnidadSeleccionada() {

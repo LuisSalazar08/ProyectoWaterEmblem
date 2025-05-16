@@ -6,11 +6,12 @@ public class Stats
 {
 	private Clases UnitType;
 	private TipoArma arma;
-	private int HP,STR,MAG,SKILL,SPD,LUCK,DEF,RES,CON;
+	private int HPMAX,HP,STR,MAG,SKILL,SPD,LUCK,DEF,RES,CON;
 	private int MOV;
-	public Stats(int hp,int st,int mg,int sk,int sp,int lc,
+	public Stats(int hpmax, int hp,int st,int mg,int sk,int sp,int lc,
 			int df,int rs,int cn,int mv,Clases ty,TipoArma wp)
 	{
+		this.HPMAX = hpmax;
 		this.HP=hp;
 		this.STR=st;
 		this.MAG=mg;
@@ -25,6 +26,7 @@ public class Stats
 		this.arma=wp;
 	}
 	public int getHP() {return this.HP;}
+	public int getMAXHP() {return this.HPMAX;}
 	public int getSTR() {return this.STR;}
 	public int getMAG() {return this.MAG;}
 	public int getSKILL() {return this.SKILL;}
