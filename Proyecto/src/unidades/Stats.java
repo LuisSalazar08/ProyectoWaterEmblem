@@ -25,6 +25,12 @@ public class Stats
 		this.UnitType=ty;
 		this.arma=wp;
 	}
+	public void setHP(int Damage)
+	{
+		if(Damage>this.HP)
+			this.HP=0;
+		this.HP-=Damage;
+	}
 	public int getHP() {return this.HP;}
 	public int getMAXHP() {return this.HPMAX;}
 	public int getSTR() {return this.STR;}
@@ -36,4 +42,5 @@ public class Stats
 	public int getRES() {return this.RES;}
 	public int getCON() {return this.CON;}
 	public int getMOV() {return this.MOV;}
+	public TipoArma getArma() {return this.arma;}
 }

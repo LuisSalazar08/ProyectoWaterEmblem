@@ -39,7 +39,6 @@ public class ManejadorEntidades {
             String nombreAleatorio = NombresUnidad.aleatorio();
             Stats stats = creadorUnidades.getStatsBase(tipos[i]);
             Unidad unidad = new Unidad(nombreAleatorio,gp, gp.getMT(), x, y, stats, tipos[i]);
-            unidad.setArmaEquipada(Armas.Excalibur);
             this.add(unidad);
         }
     }

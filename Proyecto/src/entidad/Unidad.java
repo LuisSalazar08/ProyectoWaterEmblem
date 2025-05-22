@@ -11,6 +11,7 @@ import Main.ManejadorTeclas;
 import armas.Armas;
 import tile.ManejadorTiles;
 import unidades.Clases;
+import unidades.Inventario;
 import unidades.Stats;
 
 public class Unidad extends Entidad
@@ -18,6 +19,7 @@ public class Unidad extends Entidad
 	private String nombre;
 	private boolean seleccionada;
 	private Stats stats;
+	private Inventario inventario;
 	private Armas armaEquipada;
 	private Clases clase;
 	private BufferedImage[] idleFrames;
@@ -49,7 +51,8 @@ public class Unidad extends Entidad
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+        this.inventario = new Inventario(this);
+        this.armaEquipada = this.inventario.getAllArmas()[0];
 	}
 	
     public void initMovimientoBounds() {
