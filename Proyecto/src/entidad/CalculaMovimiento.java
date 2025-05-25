@@ -25,41 +25,47 @@ public class CalculaMovimiento
 	    if (mT.getTeclaIzquierda()) nx = x - ts;
 	    if (mT.getTeclaDerecha())   nx = x + ts;
 
-	    int col = nx / ts;
-	    int fila= ny / ts;
-	    boolean pasable = entidad.getGamePanel()
-	                      .getManejadorTiles()
-	                      .isPassable(fila, col);
-
-	    boolean ocupado = false;
-	    for (Entidad otra : entidad.getGamePanel().getME().getEntidades()) {
-	        if (otra != entidad
-	         && otra.getMundoX() == nx
-	         && otra.getMundoY() == ny) {
-	            ocupado = true;
-	            break;
-	        }
-	    }
-
-	    if (entidad instanceof Unidad) {
-	        Unidad u = (Unidad) entidad;
-	        if (u.estaSeleccionada()) {
-	            if (!pasable || ocupado) {
-	                return; 
-	            }
-	            // límites de MOV
-	            if (nx >= u.getMinX() && nx <= u.getMaxX()) {
-	                entidad.setMundoX(nx);
-	            }
-	            if (ny >= u.getMinY() && ny <= u.getMaxY()) {
-	                entidad.setMundoY(ny);
-	            }
-	            return;
-	        }
-	    }
-
-	    entidad.setMundoX(nx);
-	    entidad.setMundoY(ny);
+	    if (entidad instanceof Unidad) 
+	    {
+            Unidad unidad = (Unidad) entidad;
+            if (unidad.estaSeleccionada()) 
+            {
+                if (!validarMovimientoUnidad(unidad, nx, ny))
+                    return;
+            } else 
+            {
+                // Movimiento normal si no está seleccionada
+                entidad.setMundoX(nx);
+                entidad.setMundoY(ny);
+            }
+        } else 
+        {
+            // Movimiento para entidades no-unidad
+            entidad.setMundoX(nx);
+            entidad.setMundoY(ny);
+        }
 	}
+	private boolean validarMovimientoUnidad(Unidad unidad, int nx, int ny) 
+	{
+        boolean enAreaMovimiento = unidad.puedeMoverseA(nx, ny);
+        
+        int col = nx / tileSize;
+        int fila = ny / tileSize;
+        boolean pasable = entidad.getGamePanel()
+                            .getManejadorTiles()
+                            .isPassable(fila, col);
+        
+        boolean ocupado = entidad.getGamePanel().getME().getEntidades().stream()
+            .anyMatch(e -> e != entidad 
+                && e.getMundoX() == nx 
+                && e.getMundoY() == ny);
 
+        if (enAreaMovimiento && pasable && !ocupado) 
+        {
+            unidad.setMundoX(nx);
+            unidad.setMundoY(ny);
+            return true;
+        }
+        return false;
+    }
 }

@@ -22,21 +22,29 @@ public class ManejadorMovimiento
 
         if (!keyPressed) {
             keyWasPressed = false;
+            lastMoveTime = 0;
             return;
         }
-
-        if (!keyWasPressed) {
+        long timeSinceLast = currentTime - lastMoveTime;
+        
+        if (!keyWasPressed || timeSinceLast >= (keyWasPressed ? repeatDelay : initialDelay)) 
+        {
             cMV.mover();
             lastMoveTime = currentTime;
             keyWasPressed = true;
-        } else {
-            long diff = currentTime - lastMoveTime;
-            long delay = (diff < initialDelay) ? initialDelay : repeatDelay;
-            if (diff >= delay) {
-                cMV.mover();
-                lastMoveTime = currentTime;
-            }
         }
+//        if (!keyWasPressed) {
+//            cMV.mover();
+//            lastMoveTime = currentTime;
+//            keyWasPressed = true;
+//        } else {
+//            long diff = currentTime - lastMoveTime;
+//            long delay = (diff < initialDelay) ? initialDelay : repeatDelay;
+//            if (diff >= delay) {
+//                cMV.mover();
+//                lastMoveTime = currentTime;
+//            }
+//        }
     }
 	
 }

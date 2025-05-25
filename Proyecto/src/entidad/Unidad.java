@@ -3,6 +3,9 @@ package entidad;
 import java.awt.Color;
 import javax.imageio.ImageIO;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
@@ -27,6 +30,8 @@ public class Unidad extends Entidad
 	private int contadorFrames = 0;
 	private final int velocidadAnimacion = 10;
 	ManejadorMovimiento mMV;
+	
+	private List<int[]> movimientoTiles;
     private int startX, startY, minX, maxX, minY, maxY;
 	
 	public Unidad(String nombre, GamePanel gP, ManejadorTeclas mT, int mundoX, int mundoY, Stats statsbase, Clases clase)
@@ -55,20 +60,34 @@ public class Unidad extends Entidad
         this.armaEquipada = this.inventario.getAllArmas()[0];
 	}
 	
-    public void initMovimientoBounds() {
+    public void initMovimientoBounds() 
+    {
         startX = getMundoX();
         startY = getMundoY();
         int movTiles = stats.getMOV();
         int ts = gP.getTamanioTile();
-        minX = startX - movTiles * ts;
-        maxX = startX + movTiles * ts;
-        minY = startY - movTiles * ts;
-        maxY = startY + movTiles * ts;
+        
+        movimientoTiles = new ArrayList<>();
+        int unitCol = startX / ts;
+        int unitRow = startY / ts;
+        for(int dx = -movTiles; dx <= movTiles; dx++) 
+            for(int dy = -(movTiles - Math.abs(dx)); dy <= (movTiles - Math.abs(dx)); dy++) 
+            {
+                int targetCol = unitCol + dx;
+                int targetRow = unitRow + dy;
+                
+                // Convertir a coordenadas mundiales
+                int wx = targetCol * ts;
+                int wy = targetRow * ts;
+                
+                movimientoTiles.add(new int[]{wx, wy});
+            }
     }
 	
 	@Override
 	public void update() {
-	    if (this.seleccionada) {
+	    if (this.seleccionada) 
+	    {
 	        boolean anyArrow = mT.getTeclaArriba() 
 	                        || mT.getTeclaAbajo()
 	                        || mT.getTeclaIzquierda() 
@@ -86,7 +105,8 @@ public class Unidad extends Entidad
 	    }
 
 	    contadorFrames++;
-	    if (contadorFrames > velocidadAnimacion) {
+	    if (contadorFrames > velocidadAnimacion) 
+	    {
 	        frameActual = (frameActual + 1) % idleFrames.length;
 	        contadorFrames = 0;
 	    }
@@ -96,35 +116,34 @@ public class Unidad extends Entidad
 	    int ts   = this.tileSize;
 	    int camX = gP.getJugador().getMundoX();
 	    int camY = gP.getJugador().getMundoY();
-
 	    ManejadorTiles mt = gP.getManejadorTiles();
-	    for (int px = minX; px <= maxX; px += ts) {
-	        for (int py = minY; py <= maxY; py += ts) {
-	            int col  = px / ts;
-	            int fila = py / ts;
-	            
-	            boolean pasable = mt.isPassable(fila, col);
-
-	            boolean ocupado = false;
-	            for (Entidad otra : gP.getME().getEntidades()) {
-	                if (otra != this
-	                 && otra.getMundoX() == px
-	                 && otra.getMundoY() == py) {
-	                    ocupado = true;
-	                    break;
-	                }
-	            }
-
-	            if (!pasable || ocupado) {
-	                g2.setColor(new Color(255, 0, 0, 100));
-	            } else {
-	                g2.setColor(new Color(0, 255, 0, 80));
-	            }
-
-	            int sx = px - camX + pantallaX;
-	            int sy = py - camY + pantallaY;
-	            g2.fillRect(sx, sy, ts, ts);
-	        }
+	    
+	    for(int[] tile : this.movimientoTiles)
+	    {
+	    	int px = tile[0];
+	        int py = tile[1];
+	        
+	        int col = px / ts;
+	        int fila = py / ts;
+	        
+	        boolean pasable = mt.isPassable(fila, col);
+	        
+	        boolean ocupado = gP.getME().getEntidades().stream()
+	            .anyMatch(e -> e != this && 
+	                e.getMundoX() == px && 
+	                e.getMundoY() == py);
+	        
+	        int sx = px - camX + pantallaX;
+	        int sy = py - camY + pantallaY;
+	        
+	        g2.setColor(new Color(
+	            pasable && !ocupado ? 0 : 255, // R
+	            pasable && !ocupado ? 255 : 0, // G
+	            0, // B
+	            pasable && !ocupado ? 80 : 100 // Alpha
+	        ));
+	        
+	        g2.fillRect(sx, sy, ts, ts);
 	    }
 	}
 	
@@ -143,6 +162,15 @@ public class Unidad extends Entidad
             g2.setColor(seleccionada ? Color.YELLOW : Color.BLUE);
             g2.fillRect(sx, sy, ts, ts);
         }
+    }
+    public List<int[]> getTilesMovimiento() {
+        return Collections.unmodifiableList(movimientoTiles);
+    }
+    public boolean puedeMoverseA(int x, int y) 
+    {
+        int ts = gP.getTamanioTile();
+        return movimientoTiles.stream()
+            .anyMatch(t -> t[0] == x && t[1] == y);
     }
     public Inventario getInventario() {return this.inventario;}
 	public void setSeleccionada(boolean seleccionada) {
