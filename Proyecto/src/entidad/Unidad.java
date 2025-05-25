@@ -144,7 +144,7 @@ public class Unidad extends Entidad
             g2.fillRect(sx, sy, ts, ts);
         }
     }
-
+    public Inventario getInventario() {return this.inventario;}
 	public void setSeleccionada(boolean seleccionada) {
         this.seleccionada = seleccionada;
     }

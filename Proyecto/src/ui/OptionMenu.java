@@ -6,8 +6,10 @@ import java.awt.Font;
 import java.util.List;
 
 import Main.GamePanel;
+import armas.Armas;
 import entidad.Unidad;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class OptionMenu {
@@ -19,12 +21,16 @@ public class OptionMenu {
     private Font font = new Font("Arial", Font.PLAIN, 16);
     private int lineHeight = 20;
     private final GamePanel panel;
+    private List<String> mainOptions;
+    
+    private boolean inWeaponMenu = false;
 
     public OptionMenu(GamePanel panel, int width, int height, String... opts) {
     	this.panel  = panel;
         this.width = width;
         this.height = lineHeight * opts.length + 10;
-        this.options = Arrays.asList(opts);
+        this.mainOptions = Arrays.asList(opts);
+        this.options = new ArrayList<>(this.mainOptions);
     }
 
     public void show(int x, int y) {
@@ -34,50 +40,125 @@ public class OptionMenu {
     }
 
     public void hide() {
-        this.visible = false;
+        this.visible = false; 
     }
 
     public boolean isVisible() {
         return visible;
     }
-
+    
+    public void setOptions(String... opts) 
+    {
+        this.options = Arrays.asList(opts);
+        this.height = lineHeight * opts.length + 10;
+    }
+    
     public void update(boolean upPressed, boolean downPressed, boolean enterPressed, boolean escPressed) {
-    	if (!visible) return;
+        if (!visible) return;
 
-        if (upPressed) selected = (selected - 1 + options.size()) % options.size();
-        if (downPressed) selected = (selected + 1) % options.size();
+        if (upPressed) updateSelection(-1);
+        if (downPressed) updateSelection(1);
 
-        if (enterPressed) {
-            executeOption(options.get(selected));
-            hide();
-        }
-
-        if (escPressed) {
-            hide();
-        }
-        
+        if (enterPressed) handleEnterPress();
+        if (escPressed) handleEscapePress();
     }
 
-    private void executeOption(String opt) {
-        switch(opt) {
-        case "Mover":
-            Unidad u = panel.getJugador().getUnidadSeleccionada();
-            if (u != null) {
-                u.setSeleccionada(true);
-                u.initMovimientoBounds();
+    private void updateSelection(int direction) {
+        selected = (selected + direction + options.size()) % options.size();
+    }
+
+    private int calculateHeight() {
+        return lineHeight * options.size() + 10;
+    }
+    private void handleEnterPress() {
+        boolean shouldClose = executeOption(options.get(selected));
+        if (shouldClose) hide();
+    }
+
+    private void revertToMainMenu() {
+        this.options = new ArrayList<>(mainOptions);
+        this.inWeaponMenu = false;	
+        this.selected = 0;
+        this.height = calculateHeight();
+    }
+    private void handleEscapePress() {
+        if (inWeaponMenu) {
+            revertToMainMenu();
+        } else {
+            hide();
+        }
+    }
+    private void handleWeaponSelection(String weaponName) 
+    {
+        Unidad unidad = panel.getJugador().getUnidadSeleccionada();
+        if (unidad != null) {
+            try {
+                Armas arma = Armas.valueOf(weaponName);
+                // unidad.usarArma(arma); // Lógica real de ataque aquí
+            } catch (IllegalArgumentException e) {
+                System.err.println("Arma inválida: " + weaponName);
             }
-            break;
-        case "Atacar":
-            Unidad u1 = panel.getJugador().getUnidadSeleccionada();
-        	if (u1 != null) {
-        		u1.setSeleccionada(true);
-        	}
-            break;
-        case "Salir":
-            break;
+        }
+        revertToMainMenu();
     }
+    private void handleMoveAction()
+    {
+    	Unidad u = panel.getJugador().getUnidadSeleccionada();
+        if (u != null) 
+        {
+            u.setSeleccionada(true);
+            u.initMovimientoBounds();
+        }
     }
-
+    private void enterWeaponMenu(List<String> armas) 
+    {
+        this.options = armas;
+        this.inWeaponMenu = true;
+        this.selected = 0;
+        this.height = calculateHeight();
+    }
+    private boolean handleAttackAction() 
+    {
+        Unidad unidad = panel.getJugador().getUnidadSeleccionada();
+        if (unidad != null) 
+        {
+            Armas[] armas = unidad.getInventario().getAllArmas();
+            List<String> armasDisponibles = new ArrayList<>();
+            
+            for (Armas arma : armas) {
+                if (arma != null) armasDisponibles.add(arma.name());
+            }
+            
+            if (!armasDisponibles.isEmpty()) {
+                enterWeaponMenu(armasDisponibles);
+                return false;
+            }
+        }
+        return true;
+    }
+    private boolean handleMainMenuSelection(String opt) 
+    {
+        switch (opt) {
+            case "Mover":
+                handleMoveAction();
+                return true;
+            case "Atacar":
+                return handleAttackAction();
+            default:
+                return true;
+        }
+    }
+    private boolean executeOption(String opt) 
+    {
+    	
+    	if(this.inWeaponMenu)
+    	{
+    		handleWeaponSelection(opt);
+            return true;
+    	}
+    	return handleMainMenuSelection(opt);
+    }
+    
     public void draw(Graphics2D g2) {
         if (!visible) return;
         g2.setColor(new Color(0, 0, 0, 200));
