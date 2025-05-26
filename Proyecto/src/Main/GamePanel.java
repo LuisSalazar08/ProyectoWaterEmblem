@@ -13,6 +13,7 @@ import entidad.Entidad;
 import tile.ManejadorTiles;
 import ui.InfoBox;
 import ui.OptionMenu;
+import ui.TurnBox;
 import entidad.Unidad;
 
 public class GamePanel extends JPanel implements Runnable
@@ -33,7 +34,9 @@ public class GamePanel extends JPanel implements Runnable
 	ManejadorTiles mTi = new ManejadorTiles(this);
 	ManejadorEntidades mE = new ManejadorEntidades(this);
 	InfoBox infoBox = new InfoBox(10, 10, 150, 100);
-	OptionMenu menu = new OptionMenu(this, 100, 0, "Mover", "Atacar", "Salir");
+	TurnBox turnBox = new TurnBox(this.anchoPantalla, 60, 40);
+	OptionMenu menu = new OptionMenu(this, 100, 0, "Mover", "Atacar","Esperar" ,"Salir");
+	TurnManager turnManager = new TurnManager(this, cursor);
 	
 	int	FPS = 60;
 	
@@ -77,9 +80,18 @@ public class GamePanel extends JPanel implements Runnable
 		}
 	}
 	public void update() {
-	    Unidad u = cursor.getUnidadSeleccionada();
+	    if(this.turnManager.isPlayerTurn())
+	    	this.logicaJugador();
+	    else this.logicaEnemigos();	
+	}
+	public void logicaEnemigos()
+	{
+		
+	}
+	public void logicaJugador()
+	{
+		Unidad u = cursor.getUnidadSeleccionada();
 	    mE.updateAll();
-
 	    if (u != null && u.estaSeleccionada()) {
 	        u.update();      
 	        return;          
@@ -119,13 +131,13 @@ public class GamePanel extends JPanel implements Runnable
 	    }
 
 	    cursor.draw(g2);
+	    turnBox.draw(g2, turnManager);
 	    infoBox.draw(g2, cursor.getUnidadSeleccionada());
 	    menu.draw(g2);
-
 	    g2.dispose();
 	}
 	
-	
+	public TurnManager getTM() {return this.turnManager;}
 	public ManejadorTeclas getMT()
 	{
 		return this.mT;

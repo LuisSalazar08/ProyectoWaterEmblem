@@ -33,6 +33,8 @@ public class Unidad extends Entidad
 	
 	private List<int[]> movimientoTiles;
     private int startX, startY, minX, maxX, minY, maxY;
+    private boolean hasActed = false;
+    private boolean hasMoved=false;
 	
 	public Unidad(String nombre, GamePanel gP, ManejadorTeclas mT, int mundoX, int mundoY, Stats statsbase, Clases clase)
 	{
@@ -85,7 +87,9 @@ public class Unidad extends Entidad
     }
 	
 	@Override
-	public void update() {
+	public void update() 
+	{
+		if(hasActed) return;
 	    if (this.seleccionada) 
 	    {
 	        boolean anyArrow = mT.getTeclaArriba() 
@@ -97,6 +101,7 @@ public class Unidad extends Entidad
 
 	        if (mT.getTeclaEnter()) {
 	            this.seleccionada = false;
+	            this.hasMoved=true;
 	        }
 	        gP.getJugador().setMundoX(this.mundoX);
 	        gP.getJugador().setMundoY(this.mundoY);
@@ -197,6 +202,11 @@ public class Unidad extends Entidad
     public BufferedImage getIdleFrameActual() {
         return idleFrames != null ? idleFrames[frameActual] : null;
     }
+    public boolean isViva() {return this.stats.getHP()>0;}
+    public boolean hasMoved() {return hasMoved;}
+    public void setHasMoved(boolean moved) {this.hasMoved=moved;}
+    public boolean hasActed() { return hasActed; }
+    public void setHasActed(boolean acted) { this.hasActed = acted; }
     public int getMinX() { return minX; }
     public int getMaxX() { return maxX; }
     public int getMinY() { return minY; }

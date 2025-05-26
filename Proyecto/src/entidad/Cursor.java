@@ -42,9 +42,6 @@ public class Cursor extends Entidad
 		boolean keyPressed = this.mT.getMovimiento();
 		mMV.updateMV(keyPressed);
 		actualizarSeleccion(gP);
-		
-		
-    	
     }
 	
 	public void actualizarSeleccion(GamePanel gP) {
@@ -83,7 +80,10 @@ public class Cursor extends Entidad
 	    int cursorScreenY = this.mundoY - gP.getJugador().getMundoY() + this.pantallaY - auxY;
 	    g2.drawImage(sprite, cursorScreenX, cursorScreenY, tileSize, tileSize, null);
 	}
-	
+	public void resetUnidadSeleccionada()
+	{
+		this.unidadSeleccionada=null;
+	}
 	public Unidad getUnidadSeleccionada() {
 		return this.unidadSeleccionada;
 	}
