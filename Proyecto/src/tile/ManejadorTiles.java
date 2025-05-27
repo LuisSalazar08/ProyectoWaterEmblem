@@ -62,6 +62,8 @@ public class ManejadorTiles {
 			arregloTiles[4].setImagen(ImageIO.read(getClass().getResourceAsStream("/tiles/pasto.png")));
 			arregloTiles[5] = new Tile();
 			arregloTiles[5].setImagen(ImageIO.read(getClass().getResourceAsStream("/tiles/suelo.png")));
+			arregloTiles[6] = new Tile();
+			arregloTiles[6].setImagen(ImageIO.read(getClass().getResourceAsStream("/tiles/limit.png")));
 		}catch(IOException e) {
 			e.printStackTrace();
 		}

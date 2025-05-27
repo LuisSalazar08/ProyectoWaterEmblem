@@ -4,7 +4,8 @@ public enum Clases {
     Jinete("Jinete"),
     Infanteria("Infanteria"),
     Acorazado("Acorazado"),
-    Volador("Volador");
+    Volador("Volador"),
+	Boss("Boss");
 
     private final String displayName;
     Clases(String displayName) {
