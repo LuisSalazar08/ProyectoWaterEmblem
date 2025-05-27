@@ -2,6 +2,7 @@ package Main;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
@@ -43,6 +44,9 @@ public class GamePanel extends JPanel implements Runnable {
         "/mapas/mundo02.txt",
         "/mapas/mundo03.txt"
     };
+    private int currentLevel;
+    private boolean victory;
+    private long victoryStartTime;
 
     private final int maxRenMundo = 45;
     private final int maxColMundo = 78;
@@ -72,15 +76,13 @@ public class GamePanel extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        double intervaloDibujo = 1_000_000_000.0 / FPS;
+        double intervalo = 1_000_000_000.0 / FPS;
         double delta = 0;
-        long ultimaVez = System.nanoTime();
-        long tiempoActual;
-
+        long last = System.nanoTime();
         while (hebraJuego != null) {
-            tiempoActual = System.nanoTime();
-            delta += (tiempoActual - ultimaVez) / intervaloDibujo;
-            ultimaVez = tiempoActual;
+            long now = System.nanoTime();
+            delta += (now - last) / intervalo;
+            last = now;
             if (delta >= 1) {
                 update();
                 repaint();
@@ -101,7 +103,9 @@ public class GamePanel extends JPanel implements Runnable {
                 if (startMenu.isOptionSelected()) {
                     int sel = startMenu.getSelectedIndex();
                     if (sel >= 0 && sel <= 2) {
+                        currentLevel = sel;
                         mTi.cargaMapa(nivelMapas[sel]);
+                        victory = false;
                         state = GameState.PLAYING;
                     } else {
                         System.exit(0);
@@ -109,12 +113,44 @@ public class GamePanel extends JPanel implements Runnable {
                 }
                 break;
             case PLAYING:
-                if (turnManager.isPlayerTurn())
-                    logicaJugador();
-                else
-                    logicaEnemigos();
+                if (victory) {
+                    if (System.currentTimeMillis() - victoryStartTime >= 2000) {
+                        state = GameState.MENU;
+                        int mx = (anchoPantalla - 200) / 2;
+                        int my = (altoPantalla - 100) / 2;
+                        startMenu.show(mx, my);
+                        startMenu.setOptions("Nivel 1", "Nivel 2", "Nivel 3", "Salir");
+                    }
+                    return;
+                }
+                checkVictory();
+                if (!victory) {
+                    if (turnManager.isPlayerTurn())
+                        logicaJugador();
+                    else
+                        logicaEnemigos();
+                }
                 break;
         }
+    }
+
+    private void checkVictory() {
+        if (currentLevel == 0) {
+            for (Entidad e : mE.getEntidades()) {
+                if (e instanceof Unidad) {
+                    Unidad u = (Unidad) e;
+                    if (u.estaSeleccionada()) continue; // Ignorar si aún está seleccionada
+                    int row = u.getMundoY() / tamanioTile;
+                    int col = u.getMundoX() / tamanioTile;
+                    if (row == 22 && col == maxColMundo - 5) {
+                        victory = true;
+                        victoryStartTime = System.currentTimeMillis();
+                        break;
+                    }
+                }
+            }
+        }
+        // Victory for level 3 to implement later
     }
 
     public void logicaEnemigos() { }
@@ -160,15 +196,22 @@ public class GamePanel extends JPanel implements Runnable {
             for (Entidad e : mE.getEntidades()) {
                 if (e instanceof Unidad) {
                     Unidad uu = (Unidad) e;
-                    if (uu.estaSeleccionada()) {
-                        uu.drawHighlight(g2);
-                    }
+                    if (uu.estaSeleccionada()) uu.drawHighlight(g2);
                 }
             }
             cursor.draw(g2);
             turnBox.draw(g2, turnManager);
             infoBox.draw(g2, cursor.getUnidadSeleccionada());
             menu.draw(g2);
+            if (victory) {
+                String msg = "¡Nivel completado!";
+                g2.setFont(new Font("Arial", Font.BOLD, 36));
+                int w = g2.getFontMetrics().stringWidth(msg);
+                int x = (anchoPantalla - w) / 2;
+                int y = altoPantalla / 2;
+                g2.setColor(Color.YELLOW);
+                g2.drawString(msg, x, y);
+            }
         }
 
         g2.dispose();
@@ -191,3 +234,4 @@ public class GamePanel extends JPanel implements Runnable {
     public Cursor getJugador() { return cursor; }
     public ManejadorTiles getManejadorTiles() { return mTi; }
 }
+

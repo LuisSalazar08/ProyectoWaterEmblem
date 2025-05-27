@@ -71,7 +71,7 @@ public class ManejadorTiles {
 	
     public boolean isPassable(int fila, int col) {
         int codigo = codigosMapaTiles[fila][col];
-        return !(codigo == 0 || codigo == 1 || codigo == 3);
+        return !(codigo == 0 || codigo == 1 || codigo == 3 || codigo == 6);
     }
 	
 	public void draw(Graphics2D g2) {
