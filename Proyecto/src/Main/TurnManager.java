@@ -67,7 +67,12 @@ public class TurnManager
     }
     public void notificarAccionEnemigo() 
     {
-        if(enemyUnits.stream().allMatch(e -> e.hasActed() || !e.isViva())) {
+        if(enemyUnits.stream().allMatch(e -> e.hasActed() || !e.isViva())) 
+        {	
+        	enemyUnits.forEach(e -> {
+                e.setHasActed(false);
+                e.setHasMoved(false);
+            });
             endEnemyTurn();
         }
     }

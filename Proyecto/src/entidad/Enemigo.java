@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -51,7 +52,6 @@ public class Enemigo extends Entidad {
     }
     private void actualizarPosicionPantalla() 
     {
-        // Misma lógica que en Unidad para posición relativa a la cámara
         pantallaX = mundoX - gP.getJugador().getMundoX() + gP.getAnchoPantalla()/2;
         pantallaY = mundoY - gP.getJugador().getMundoY() + gP.getAltoPantalla()/2;
     }
@@ -59,15 +59,15 @@ public class Enemigo extends Entidad {
     @Override
     public void update() 
     {
-        if(hasActed || !gP.getTM().isEnemyTurn()) return;
-        
-        contadorFrames++;
-        if (contadorFrames > velocidadAnimacion) 
-        {
-        	frameActual = (frameActual + 1) % idleFrames.length;
-        	contadorFrames = 0;
-        }
-        
+    	if(hasActed || hasMoved) return;
+    	contadorFrames++;
+    	if (contadorFrames > velocidadAnimacion) 
+    	{
+    		frameActual = (frameActual + 1) % idleFrames.length;
+    		contadorFrames = 0;
+    	}
+    	if(!gP.getTM().isEnemyTurn()) return;
+
         seleccionarObjetivo();
         if(objetivo != null && objetivo.isViva()) {
             if(!hasMoved) mover();
@@ -77,18 +77,23 @@ public class Enemigo extends Entidad {
         gP.getTM().notificarAccionEnemigo();
     }
 
-    private void seleccionarObjetivo() {
-        List<Unidad> unidades = gP.getME().getEntidades().stream()
-            .filter(e -> e instanceof Unidad)
-            .map(e -> (Unidad)e)
-            .toList();
+    private void seleccionarObjetivo() 
+    {
+    	List<Unidad> unidades = gP.getME().getEntidades().stream()
+                .filter(e -> e instanceof Unidad && !(e instanceof Enemigo)) // Filtro clave
+                .map(e -> (Unidad)e)
+                .filter(Unidad::isViva)
+                .toList();
         
         objetivo = unidades.stream()
             .min((u1, u2) -> Integer.compare(calcularDistancia(u1), calcularDistancia(u2)))
             .orElse(null);
+        System.out.println("Objetivo seleccionado: " + (objetivo != null ? objetivo.getNombre() : "Ninguno"));
+        
     }
 
-    private int calcularDistancia(Unidad u) {
+    private int calcularDistancia(Unidad u) 
+    {
         int ts = gP.getTamanioTile();
         return (Math.abs(u.getMundoX() - mundoX) + 
               Math.abs(u.getMundoY() - mundoY)) / ts;
@@ -96,17 +101,21 @@ public class Enemigo extends Entidad {
 
     public void initMovimientoBounds() 
     {
+    	int mov = this.getStats().getMOV();
         int ts = gP.getTamanioTile();
-        int mov = stats.getMOV();
         int col = mundoX / ts;
         int fila = mundoY / ts;
         
         movimientoTiles.clear();
-        for(int dx = -mov; dx <= mov; dx++) {
+        for(int dx = -mov; dx <= mov; dx++) 
+        {
             for(int dy = -(mov - Math.abs(dx)); dy <= (mov - Math.abs(dx)); dy++) {
-                int wx = (col + dx) * ts;
-                int wy = (fila + dy) * ts;
-                movimientoTiles.add(new int[]{wx, wy});
+                int targetCol = col+ dx;
+                int targetRow = fila+ dy;
+                movimientoTiles.add(new int[]{
+                    targetCol * ts, 
+                    targetRow * ts
+                });
             }
         }
     }
@@ -126,16 +135,18 @@ public class Enemigo extends Entidad {
     private void mover() 
     {
         initMovimientoBounds();
-        int[] mejorPos = movimientoTiles.stream()
-            .filter(this::esTileValido)
-            .min((t1, t2) -> Integer.compare(
-                calcularDistanciaTile(t1, objetivo),
-                calcularDistanciaTile(t2, objetivo)))
-            .orElse(new int[]{mundoX, mundoY});
-        
-        mundoX = mejorPos[0];
-        mundoY = mejorPos[1];
-        hasMoved = true;
+        int ts = gP.getTamanioTile();
+        movimientoTiles.stream()
+        .filter(this::esTileValido)
+        .min(Comparator.comparingInt(t -> 
+            Math.abs(t[0] - objetivo.getMundoX()) + 
+            Math.abs(t[1] - objetivo.getMundoY())
+        ))
+        .ifPresent(mejorPos -> {
+            this.mundoX = mejorPos[0];
+            this.mundoY = mejorPos[1];
+            this.hasMoved = true;
+        });
     }
 
     private int calcularDistanciaTile(int[] tile, Unidad u) {
@@ -155,39 +166,37 @@ public class Enemigo extends Entidad {
 
     private void atacar() 
     {
+    	if(this.objetivo==null || !this.objetivo.isViva()) return;
         if(calcularDistancia(objetivo) <= armaEquipada.getAlcance()) 
         {
-            int danio = stats.getSTR() + armaEquipada.getPoder() - objetivo.getStats().getDEF();
+        	int danio = stats.getSTR() + armaEquipada.getPoder() - objetivo.getStats().getDEF();
+            danio = Math.max(0, danio); 
             objetivo.getStats().setHP(objetivo.getStats().getHP() - danio);
-            if(!objetivo.isViva()) gP.getME().remove(objetivo);
+            if(!objetivo.isViva()) gP.getME().getEntidades().remove(objetivo);
         }
     }
 
     @Override
     public void draw(Graphics2D g2) 
     {
-    	actualizarPosicionPantalla(); // Actualizar posición cada frame
+    	actualizarPosicionPantalla();
         
-        // Dibujar sprite animado con filtro rojo
         if (idleFrames != null && idleFrames[frameActual] != null) {
             g2.drawImage(
                 idleFrames[frameActual], 
-                pantallaX, 
-                pantallaY, 
+                this.pantallaX, 
+                this.pantallaY, 
                 gP.getTamanioTile(), 
                 gP.getTamanioTile(), 
                 null
             );
         } 
-
-        // Resaltado de selección (opcional para debug)
         if(gP.getTM().isEnemyTurn()) 
         {
             g2.setColor(new Color(255, 0, 0, 100));
             g2.fillRect(pantallaX, pantallaY, gP.getTamanioTile(), gP.getTamanioTile());
         }
 
-        // Borde identificativo
         g2.setColor(Color.RED);
         g2.drawRect(pantallaX, pantallaY, gP.getTamanioTile(), gP.getTamanioTile());
         
