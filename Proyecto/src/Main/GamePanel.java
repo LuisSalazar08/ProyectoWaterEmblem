@@ -28,6 +28,9 @@ public class GamePanel extends JPanel implements Runnable {
 
     private Thread hebraJuego;
     private final int FPS = 60;
+    
+    private MusicManager musicManager = new MusicManager();
+    private boolean musicStarted = false;
 
     private ManejadorTeclas mT = new ManejadorTeclas();
     private Cursor cursor = new Cursor(this, mT);
@@ -95,6 +98,8 @@ public class GamePanel extends JPanel implements Runnable {
     public void update() {
         switch (state) {
             case MENU:
+            	musicManager.stop();
+                musicStarted = false;
                 startMenu.update(
                     mT.getFlechaArriba(),
                     mT.getFlechaAbajo(),
@@ -122,6 +127,10 @@ public class GamePanel extends JPanel implements Runnable {
                 }
                 break;
             case PLAYING:
+            	if (!musicStarted) {
+                    musicManager.playLevelMusic(currentLevel);
+                    musicStarted = true;
+                }
                 if (victory) {
                     if (System.currentTimeMillis() - victoryStartTime >= 2000) {
                         state = GameState.MENU;
