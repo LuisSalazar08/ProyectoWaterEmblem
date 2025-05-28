@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 
 import entidad.Unidad;
 import entidad.Cursor;
+import entidad.Enemigo;
 import entidad.Entidad;
 import tile.ManejadorTiles;
 import ui.InfoBox;
@@ -158,12 +159,16 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
         }
-        // Victory for level 3 to implement later
     }
 
-    public void logicaEnemigos() { }
+    public void logicaEnemigos() 
+    { 
+    	mE.updateAll();
+    	this.turnManager.notificarAccionEnemigo();
+    }
 
-    public void logicaJugador() {
+    public void logicaJugador() 
+    {
         Unidad u = cursor.getUnidadSeleccionada();
         mE.updateAll();
         if (u != null && u.estaSeleccionada()) {
@@ -199,7 +204,7 @@ public class GamePanel extends JPanel implements Runnable {
         if (state == GameState.MENU) {
             startMenu.draw(g2);
         } else {
-            mTi.draw(g2);
+            mTi.draw(g2);	
             mE.drawALL(g2);
             for (Entidad e : mE.getEntidades()) {
                 if (e instanceof Unidad) {

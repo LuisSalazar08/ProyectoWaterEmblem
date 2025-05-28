@@ -1,12 +1,18 @@
 package unidades;
 import armas.Armas;
 import armas.TipoArma;
+import entidad.Enemigo;
 import entidad.Unidad;
 import java.util.Random;
 public class Inventario 
 {
 	private Armas[] armas = new Armas[4];
 	public Inventario(Unidad u)
+	{
+		TipoArma cl = u.getStats().getArma();
+		this.asignarArmas(cl);
+	}
+	public Inventario(Enemigo u)
 	{
 		TipoArma cl = u.getStats().getArma();
 		this.asignarArmas(cl);

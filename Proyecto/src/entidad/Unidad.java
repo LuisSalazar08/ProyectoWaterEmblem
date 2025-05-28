@@ -117,7 +117,8 @@ public class Unidad extends Entidad
 	    }
 	}
 	
-	public void drawHighlight(Graphics2D g2) {
+	public void drawHighlight(Graphics2D g2) 
+	{
 	    int ts   = this.tileSize;
 	    int camX = gP.getJugador().getMundoX();
 	    int camY = gP.getJugador().getMundoY();
@@ -153,7 +154,8 @@ public class Unidad extends Entidad
 	}
 	
     @Override
-    public void draw(Graphics2D g2) {
+    public void draw(Graphics2D g2) 
+    {
         int ts   = this.tileSize;
         int camX = gP.getJugador().getMundoX();
         int camY = gP.getJugador().getMundoY();
