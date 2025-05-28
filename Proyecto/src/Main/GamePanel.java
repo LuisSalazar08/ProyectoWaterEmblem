@@ -105,8 +105,16 @@ public class GamePanel extends JPanel implements Runnable {
                     if (sel >= 0 && sel <= 2) {
                         currentLevel = sel;
                         mTi.cargaMapa(nivelMapas[sel]);
-                        victory = false;
+                        
+                        victory = false;   
+                        Unidad primera = mE.getEntidades().isEmpty() ? null : (Unidad) mE.getEntidades().get(0);
+                        if (primera != null) {
+                            cursor.setWorldPosition(primera.getMundoX(), primera.getMundoY());
+                            cursor.actualizarSeleccion(this);
+                        }
+                        
                         state = GameState.PLAYING;
+                       
                     } else {
                         System.exit(0);
                     }
@@ -233,5 +241,8 @@ public class GamePanel extends JPanel implements Runnable {
     public int getAltoMundo() { return altoMundo; }
     public Cursor getJugador() { return cursor; }
     public ManejadorTiles getManejadorTiles() { return mTi; }
+    public int getCurrentLevel() {
+        return currentLevel;
+    }
 }
 

@@ -18,28 +18,55 @@ public class ManejadorEntidades {
 
     public ManejadorEntidades(GamePanel gp) {
         this.gp = gp;
-        this.generarEntidades();
+        generarEntidades();
     }
+    
+    private boolean entidadesGeneradas = false;
+
 
     public void generarEntidades() {
         int tileSize = gp.getTamanioTile();
-        int centerX = (gp.getMaxColMundo() / 2) * tileSize;
-        int centerY = (gp.getMaxRenMundo() / 2) * tileSize;
+        int maxCols = gp.getMaxColMundo();
+        int maxRens = gp.getMaxRenMundo();
+        int level = gp.getCurrentLevel(); 
 
-        Clases[] tipos = {
-            Clases.Jinete,
-            Clases.Infanteria,
-            Clases.Acorazado,
-            Clases.Volador
-        };
+        entidades.clear();
 
-        for (int i = 0; i < tipos.length; i++) {
-            int x = centerX - i * 2 * tileSize;
-            int y = centerY;
-            String nombreAleatorio = NombresUnidad.aleatorio();
-            Stats stats = creadorUnidades.getStatsBase(tipos[i]);
-            Unidad unidad = new Unidad(nombreAleatorio,gp, gp.getMT(), x, y, stats, tipos[i]);
-            this.add(unidad);
+        switch (level) {
+            case 0:
+            case 1:
+                
+                int col1X = 4 * tileSize;
+                int col2X = 5 * tileSize;
+                int centerRow = maxRens / 2;
+                
+                int[] rowOffsets = {-3, -1, 1, 3};
+                Clases[] tipos = Clases.values();
+                for (int i = 0; i < 4; i++) {
+                    int y = (centerRow + rowOffsets[i]) * tileSize;
+                    String nombre1 = NombresUnidad.aleatorio();
+                    Stats stats1 = creadorUnidades.getStatsBase(tipos[i % tipos.length]);
+                    Unidad u1 = new Unidad(nombre1, gp, gp.getMT(), col1X, y, stats1, tipos[i % tipos.length]);
+                    Unidad u2 = new Unidad(nombre1, gp, gp.getMT(), col2X, y, stats1, tipos[i % tipos.length]);
+                    add(u1);
+                    add(u2);
+                }
+                break;
+
+            case 2:
+                
+                int centerX = (maxCols / 2) * tileSize;
+                int centerY = (maxRens / 2) * tileSize;
+                Clases[] tipos3 = {Clases.Jinete, Clases.Infanteria, Clases.Volador, Clases.Acorazado};
+                for (int i = 0; i < tipos3.length; i++) {
+                    String nombre = NombresUnidad.aleatorio();
+                    Stats stats = creadorUnidades.getStatsBase(tipos3[i]);
+                    Unidad u = new Unidad(nombre, gp, gp.getMT(), centerX, centerY, stats, tipos3[i]);
+                    add(u);
+                }
+                break;
+
+
         }
     }
 
