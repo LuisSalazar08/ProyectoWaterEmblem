@@ -226,13 +226,13 @@ public class GamePanel extends JPanel implements Runnable {
         	    g2.drawImage(fondoMenu, 0, 0, anchoPantalla, altoPantalla, null);
         	}
 
-        	// Título "Water Emblem"
+       
         	String titulo = "Water Emblem";
         	g2.setFont(new Font("Serif", Font.BOLD, 60));
         	g2.setColor(Color.CYAN);
         	int tituloAncho = g2.getFontMetrics().stringWidth(titulo);
         	int x = (anchoPantalla - tituloAncho) / 2;
-        	int y = 100;  // Ajusta según dónde quieras posicionarlo
+        	int y = 100; 
         	g2.drawString(titulo, x, y);
             startMenu.draw(g2);
         } else {
