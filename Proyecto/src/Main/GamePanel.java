@@ -5,7 +5,10 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 import entidad.Unidad;
@@ -25,6 +28,7 @@ public class GamePanel extends JPanel implements Runnable {
     private final int maxColPantalla = 26;
     private final int anchoPantalla = tamanioTile * maxColPantalla;
     private final int altoPantalla = tamanioTile * maxRenPantalla;
+    private BufferedImage fondoMenu;
 
     private Thread hebraJuego;
     private final int FPS = 60;
@@ -63,6 +67,12 @@ public class GamePanel extends JPanel implements Runnable {
         setDoubleBuffered(true);
         addKeyListener(mT);
         setFocusable(true);
+        
+        try {
+            fondoMenu = ImageIO.read(getClass().getResourceAsStream("/spritesGeneral/title.jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         state = GameState.MENU;
         int mx = (anchoPantalla - 200) / 2;
@@ -136,6 +146,7 @@ public class GamePanel extends JPanel implements Runnable {
                         state = GameState.MENU;
                         int mx = (anchoPantalla - 200) / 2;
                         int my = (altoPantalla - 100) / 2;
+                        System.exit(0);
                         startMenu.show(mx, my);
                         startMenu.setOptions("Nivel 1", "Nivel 2", "Nivel 3", "Salir");
                     }
@@ -153,11 +164,11 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void checkVictory() {
-        if (currentLevel == 0) {
+        if (currentLevel == 0 || currentLevel == 1 || currentLevel == 2) {
             for (Entidad e : mE.getEntidades()) {
                 if (e instanceof Unidad) {
                     Unidad u = (Unidad) e;
-                    if (u.estaSeleccionada()) continue; // Ignorar si aún está seleccionada
+                    if (u.estaSeleccionada()) continue; 
                     int row = u.getMundoY() / tamanioTile;
                     int col = u.getMundoX() / tamanioTile;
                     if (row == 22 && col == maxColMundo - 5) {
@@ -211,10 +222,23 @@ public class GamePanel extends JPanel implements Runnable {
         Graphics2D g2 = (Graphics2D) g;
 
         if (state == GameState.MENU) {
+        	if (fondoMenu != null) {
+        	    g2.drawImage(fondoMenu, 0, 0, anchoPantalla, altoPantalla, null);
+        	}
+
+        	// Título "Water Emblem"
+        	String titulo = "Water Emblem";
+        	g2.setFont(new Font("Serif", Font.BOLD, 60));
+        	g2.setColor(Color.CYAN);
+        	int tituloAncho = g2.getFontMetrics().stringWidth(titulo);
+        	int x = (anchoPantalla - tituloAncho) / 2;
+        	int y = 100;  // Ajusta según dónde quieras posicionarlo
+        	g2.drawString(titulo, x, y);
             startMenu.draw(g2);
         } else {
             mTi.draw(g2);	
-            mE.drawALL(g2);
+            mE.drawALL(g2);         
+            
             for (Entidad e : mE.getEntidades()) {
                 if (e instanceof Unidad) {
                     Unidad uu = (Unidad) e;
@@ -229,10 +253,10 @@ public class GamePanel extends JPanel implements Runnable {
                 String msg = "¡Nivel completado!";
                 g2.setFont(new Font("Arial", Font.BOLD, 36));
                 int w = g2.getFontMetrics().stringWidth(msg);
-                int x = (anchoPantalla - w) / 2;
-                int y = altoPantalla / 2;
+                int x2 = (anchoPantalla - w) / 2;
+                int y2 = altoPantalla / 2;
                 g2.setColor(Color.YELLOW);
-                g2.drawString(msg, x, y);
+                g2.drawString(msg, x2, y2);
             }
         }
 
